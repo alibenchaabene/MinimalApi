@@ -5,6 +5,12 @@
         List<Book> GetBooks();
 
         Book GetBook(int id);
+
+        void AddBook(Book book);
+
+        void UpdateBook(int id, Book updatedBook);
+
+        void DeleteBook(int id);
     }
 
     public class BookService : IBookService
@@ -37,22 +43,45 @@
                 {
                     Id = 4,
                     Title = "Code Complete: A Practical Handbook of Software Construction",
-                 Author = "Steve McConnell"
+                    Author = "Steve McConnell"
                 }
-
             };
         }
 
         public List<Book> GetBooks()
         {
-            return this._books;
+            return _books;
         }
 
         public Book GetBook(int id)
         {
-            var book = this._books.FirstOrDefault(x => x.Id == id);
+            return _books.FirstOrDefault(x => x.Id == id);
+        }
 
-            return book;
+        public void AddBook(Book book)
+        {
+            // You may want to add some validation logic before adding the book.
+            _books.Add(book);
+        }
+
+        public void UpdateBook(int id, Book updatedBook)
+        {
+            var existingBook = _books.FirstOrDefault(x => x.Id == id);
+            if (existingBook != null)
+            {
+                // You may want to add some validation logic before updating the book.
+                existingBook.Title = updatedBook.Title;
+                existingBook.Author = updatedBook.Author;
+            }
+        }
+
+        public void DeleteBook(int id)
+        {
+            var bookToRemove = _books.FirstOrDefault(x => x.Id == id);
+            if (bookToRemove != null)
+            {
+                _books.Remove(bookToRemove);
+            }
         }
     }
 
@@ -60,9 +89,8 @@
     {
         public int Id { get; set; }
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public string Author { get; set; }
+        public string? Author { get; set; }
     }
 }
-
