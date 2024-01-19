@@ -20,6 +20,46 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//---------------------------- Middlewares -----------------------------//
+
+// Request Logging Middleware
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Incoming Request: {context.Request.Protocol} {context.Request.Method} {context.Request.Path}{context.Request.QueryString}");
+    await next();
+});
+
+// Request Modification Middleware
+app.Use(async (context, next) =>
+{
+    context.Request.Headers.Append("Custom-Header", "Request Modified");
+
+    // Log all headers for demonstration purposes
+    foreach (var header in context.Request.Headers)
+    {
+        Console.WriteLine($"Custom-Header: {context.Request.Headers["Custom-Header"]}");
+    }
+
+    await next();
+});
+
+// Response Modification Middleware
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        if (!context.Response.Headers.ContainsKey("Custom-Header"))
+        {
+            context.Response.Headers.Append("Custom-Header", "Response Modified");
+        }
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
+
+
+//---------------------------- Endpoints -----------------------------//
 
 // Hello Word
 app.MapGet("/", () => "Hello, World!");
